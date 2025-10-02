@@ -19,10 +19,21 @@ namespace NetFinalProject.Controllers
         }
 
         // GET: Departments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm)
         {
-            return View(await _context.Departments.ToListAsync());
+            var query = _context.Departments.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(d => d.Name.Contains(searchTerm)
+                                      || (d.ManagerName != null && d.ManagerName.Contains(searchTerm)));
+            }
+
+            ViewBag.SearchTerm = searchTerm;
+
+            return View(await query.ToListAsync());
         }
+
 
         // GET: Departments/Details/5
         public async Task<IActionResult> Details(int? id)

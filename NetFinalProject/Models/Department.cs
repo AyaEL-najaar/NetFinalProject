@@ -8,9 +8,11 @@ namespace NetFinalProject.Models
         [Key] // primary key
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Name is required ! ,Please enter .")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters.")]
         public string Name { get; set; } = string.Empty;
 
+        [StringLength(100, ErrorMessage = "Manager name cannot exceed 100 characters.")]
         public string ManagerName { get; set; }
 
         // Navigation properties : 1 Department has many Students, Courses, Instructors

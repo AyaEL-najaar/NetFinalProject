@@ -1,48 +1,40 @@
 ﻿@model NetFinalProject.Models.Course
-
 @{
-    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Course Details";
 }
 
-<h1>Details</h1>
+<h2>Course Details</h2>
 
 <div>
     <h4>Course</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Degree)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Degree)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MinimumDegree)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MinimumDegree)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Hours)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Hours)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Department)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Department.Name)
-        </dd>
+        <dt class="col-sm-3">Course Name</dt>
+        <dd class="col-sm-9">@Model.Name</dd>
+
+        <dt class="col-sm-3">Credit Hours</dt>
+        <dd class="col-sm-9">@Model.Hours</dd>
+
+        <dt class="col-sm-3">Department</dt>
+        <dd class="col-sm-9">@Model.Department?.Name</dd>
+
+        <dt class="col-sm-3">Instructor</dt>
+        <dd class="col-sm-9">@Model.Instructor?.Name</dd>
     </dl>
 </div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <h4>Enrolled Students</h4>
+    <ul>
+        @foreach (var cs in Model.CourseStudents)
+        {
+            <li>@cs.Student?.Name</li>
+        }
+    </ul>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>

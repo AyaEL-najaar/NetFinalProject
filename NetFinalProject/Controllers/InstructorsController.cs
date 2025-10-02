@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NetFinalProject.Models;
@@ -19,28 +15,33 @@ namespace NetFinalProject.Controllers
         }
 
         // GET: Instructors
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm)
         {
-            var universityContext = _context.Instructors.Include(i => i.Course).Include(i => i.Department);
-            return View(await universityContext.ToListAsync());
+            var query = _context.Instructors
+                .Include(i => i.Department)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(i => i.Name.Contains(searchTerm));
+            }
+
+            ViewBag.SearchTerm = searchTerm;
+
+            return View(await query.ToListAsync());
         }
 
         // GET: Instructors/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var instructor = await _context.Instructors
-                .Include(i => i.Course)
                 .Include(i => i.Department)
+                .Include(i => i.Courses) // لو عايزة تعرض الكورسات اللي بيدرسها
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (instructor == null)
-            {
-                return NotFound();
-            }
+
+            if (instructor == null) return NotFound();
 
             return View(instructor);
         }
@@ -48,17 +49,14 @@ namespace NetFinalProject.Controllers
         // GET: Instructors/Create
         public IActionResult Create()
         {
-            ViewData["CrsId"] = new SelectList(_context.Courses, "Id", "Name");
             ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name");
             return View();
         }
 
         // POST: Instructors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Salary,Address,Image,DeptId,CrsId")] Instructor instructor)
+        public async Task<IActionResult> Create([Bind("Id,Name,Salary,Address,Image,DeptId")] Instructor instructor)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +64,6 @@ namespace NetFinalProject.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CrsId"] = new SelectList(_context.Courses, "Id", "Name", instructor.CrsId);
             ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name", instructor.DeptId);
             return View(instructor);
         }
@@ -74,32 +71,21 @@ namespace NetFinalProject.Controllers
         // GET: Instructors/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var instructor = await _context.Instructors.FindAsync(id);
-            if (instructor == null)
-            {
-                return NotFound();
-            }
-            ViewData["CrsId"] = new SelectList(_context.Courses, "Id", "Name", instructor.CrsId);
+            if (instructor == null) return NotFound();
+
             ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name", instructor.DeptId);
             return View(instructor);
         }
 
         // POST: Instructors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Salary,Address,Image,DeptId,CrsId")] Instructor instructor)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Salary,Address,Image,DeptId")] Instructor instructor)
         {
-            if (id != instructor.Id)
-            {
-                return NotFound();
-            }
+            if (id != instructor.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -110,18 +96,13 @@ namespace NetFinalProject.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!InstructorExists(instructor.Id))
-                    {
+                    if (!_context.Instructors.Any(e => e.Id == instructor.Id))
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CrsId"] = new SelectList(_context.Courses, "Id", "Name", instructor.CrsId);
             ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name", instructor.DeptId);
             return View(instructor);
         }
@@ -129,19 +110,13 @@ namespace NetFinalProject.Controllers
         // GET: Instructors/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var instructor = await _context.Instructors
-                .Include(i => i.Course)
                 .Include(i => i.Department)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (instructor == null)
-            {
-                return NotFound();
-            }
+
+            if (instructor == null) return NotFound();
 
             return View(instructor);
         }
@@ -155,15 +130,9 @@ namespace NetFinalProject.Controllers
             if (instructor != null)
             {
                 _context.Instructors.Remove(instructor);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool InstructorExists(int id)
-        {
-            return _context.Instructors.Any(e => e.Id == id);
         }
     }
 }

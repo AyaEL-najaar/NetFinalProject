@@ -19,30 +19,42 @@ namespace NetFinalProject.Controllers
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm)
         {
-            var universityContext = _context.Courses.Include(c => c.Department);
-            return View(await universityContext.ToListAsync());
+            var query = _context.Courses
+                .Include(c => c.Department)
+                .Include(c => c.Instructor)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(c => c.Name.Contains(searchTerm));
+            }
+
+            ViewBag.SearchTerm = searchTerm;
+
+            return View(await query.ToListAsync());
         }
+
+
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var course = await _context.Courses
                 .Include(c => c.Department)
+                .Include(c => c.Instructor)
+                .Include(c => c.CourseStudents)
+                    .ThenInclude(cs => cs.Student)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (course == null)
-            {
-                return NotFound();
-            }
+
+            if (course == null) return NotFound();
 
             return View(course);
         }
+
 
         // GET: Courses/Create
         public IActionResult Create()
@@ -82,6 +94,7 @@ namespace NetFinalProject.Controllers
                 return NotFound();
             }
             ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name", course.DeptId);
+            ViewData["InstructorId"] = new SelectList(_context.Instructors, "Id", "Name", course.InstructorId);
             return View(course);
         }
 

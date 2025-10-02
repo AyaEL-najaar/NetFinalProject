@@ -44,10 +44,19 @@ namespace NetFinalProject.Models
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Instructor>()
-                .HasOne(i => i.Course)
-                .WithMany(c => c.Instructors)
-                .HasForeignKey(i => i.CrsId)
-                .OnDelete(DeleteBehavior.NoAction);
+     .HasMany(i => i.Courses)
+     .WithOne(c => c.Instructor)
+     .HasForeignKey(c => c.InstructorId)
+     .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Course>()
+    .Property(c => c.Hours)
+    .HasPrecision(5, 2);
+
+            modelBuilder.Entity<Instructor>()
+                .Property(i => i.Salary)
+                .HasPrecision(18, 2);
+
         }
 
     }

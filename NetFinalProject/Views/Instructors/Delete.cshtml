@@ -42,11 +42,20 @@
             @Html.DisplayFor(model => model.Department.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Course)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Course.Name)
-        </dd>
+            @Html.DisplayNameFor(model => model.Courses)
+            @if (Model.Courses != null && Model.Courses.Any())
+            {
+                <ul>
+                    @foreach (var course in Model.Courses)
+                    {
+                        <li>@course.Name</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <span>No courses assigned</span>
+            }
     </dl>
     
     <form asp-action="Delete">
