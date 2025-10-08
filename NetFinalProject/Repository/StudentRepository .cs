@@ -49,7 +49,7 @@ namespace NetFinalProject.Repository
                 return await GetAllAsync();
 
             return await _context.Students
-                .Where(e => e.Name.Contains(keyword))
+                .Where(e => e.Name.StartsWith(keyword))
                 .AsNoTracking()
                 .ToListAsync();
         }

@@ -26,15 +26,36 @@ namespace NetFinalProject.Controllers
             return View(students);
         }
         // Index + Search
-        public async Task<IActionResult> Index(string? search)
+        // StudentController (استخدمي _Context كما عندك)
+        public async Task<IActionResult> Index(string? searchTerm, int? deptId)
         {
-            var students = string.IsNullOrEmpty(search)
-                ? await _studentRepo.GetAllAsync()
-                : await _studentRepo.SearchAsync(search);
+            var query = _Context.Students
+                .Include(s => s.Department)
+                .AsQueryable();
 
-            ViewBag.Search = search;
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var t = searchTerm.Trim().ToLower();
+                query = query.Where(s =>
+                    s.Name.ToLower().StartsWith(t) ||
+                    (s.Address != null && s.Address.ToLower().StartsWith(t))
+                );
+            }
+
+            if (deptId.HasValue)
+                query = query.Where(s => s.DeptId == deptId.Value);
+
+            var students = await query.AsNoTracking().ToListAsync();
+
+            // اعادة تعبئة الـ dropdown واظهار القيمة في الحقل
+            var departments = await _departmentRepo.GetAllAsync();
+            ViewBag.Departments = new SelectList(departments, "Id", "Name", deptId);
+            ViewBag.SearchTerm = searchTerm;
+
             return View(students);
         }
+
+
 
         // Details
         public async Task<IActionResult> Details(int id)

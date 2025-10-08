@@ -18,12 +18,12 @@ else
     <h3 class="text-danger mt-4">⚠️ Are you sure you want to delete this record?</h3>
     <hr />
     <dl class="row">
-        @foreach (var prop in Model.GetType().GetProperties())
-        {
-            if (prop.Name.Contains("Id")) continue;
-            <dt class="col-sm-3">@prop.Name</dt>
-            <dd class="col-sm-9">@prop.GetValue(Model)</dd>
-        }
+        <dt class="col-sm-3">Name</dt>
+        <dd class="col-sm-9">@Model.Name</dd>
+
+        
+        <dt class="col-sm-3">Department</dt>
+        <dd class="col-sm-9">@Model.Department.Name</dd>
     </dl>
 
     <form asp-action="DeleteConfirmed" method="post">

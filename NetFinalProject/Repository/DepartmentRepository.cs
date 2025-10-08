@@ -42,10 +42,14 @@ namespace NetFinalProject.Repository
             if (string.IsNullOrWhiteSpace(keyword))
                 return await GetAllAsync();
 
+            keyword = keyword.Trim().ToLower();
+
             return await _context.Departments
-                .Where(d => d.Name.Contains(keyword))
+                .Where(d => d.Name.ToLower().StartsWith(keyword))
+                .AsNoTracking()
                 .ToListAsync();
         }
+
 
     }
 
