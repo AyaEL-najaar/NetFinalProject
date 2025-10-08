@@ -1,6 +1,7 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetFinalProject.Models;
+using System.Diagnostics;
 
 namespace NetFinalProject.Controllers
 {
@@ -12,7 +13,7 @@ namespace NetFinalProject.Controllers
         {
             _logger = logger;
         }
-
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();

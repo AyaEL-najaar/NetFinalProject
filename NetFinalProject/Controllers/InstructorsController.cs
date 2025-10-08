@@ -1,138 +1,74 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using NetFinalProject.Filters;
 using NetFinalProject.Models;
+using NetFinalProject.Repository;
 
 namespace NetFinalProject.Controllers
 {
-    public class InstructorsController : Controller
+    [ServiceFilter(typeof(AuthorizeStudentFilter))]
+    public class InstructorController : Controller
     {
-        private readonly UniversityContext _context;
+        private readonly IInstructorRepository _instrRepo;
 
-        public InstructorsController(UniversityContext context)
+        public InstructorController(IInstructorRepository instrRepo)
         {
-            _context = context;
+            _instrRepo = instrRepo;
+        }
+        public IActionResult Instructors()
+        {
+            var courses = _instrRepo.GetAllAsync();
+            return View(Instructors);
+        }
+        public async Task<IActionResult> Index(string? search)
+        {
+            var instructors = string.IsNullOrEmpty(search)
+                ? await _instrRepo.GetAllAsync()
+                : await _instrRepo.SearchAsync(search);
+
+            ViewBag.Search = search;
+            return View(instructors);
         }
 
-        // GET: Instructors
-        public async Task<IActionResult> Index(string searchTerm)
+        public async Task<IActionResult> Details(int id)
         {
-            var query = _context.Instructors
-                .Include(i => i.Department)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                query = query.Where(i => i.Name.Contains(searchTerm));
-            }
-
-            ViewBag.SearchTerm = searchTerm;
-
-            return View(await query.ToListAsync());
-        }
-
-        // GET: Instructors/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var instructor = await _context.Instructors
-                .Include(i => i.Department)
-                .Include(i => i.Courses) // لو عايزة تعرض الكورسات اللي بيدرسها
-                .FirstOrDefaultAsync(m => m.Id == id);
-
+            var instructor = await _instrRepo.GetByIdAsync(id);
             if (instructor == null) return NotFound();
-
             return View(instructor);
         }
 
-        // GET: Instructors/Create
-        public IActionResult Create()
-        {
-            ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name");
-            return View();
-        }
+        [HttpGet]
+        public IActionResult Create() => View();
 
-        // POST: Instructors/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Salary,Address,Image,DeptId")] Instructor instructor)
+        public async Task<IActionResult> Create(Instructor instr)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(instructor);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name", instructor.DeptId);
-            return View(instructor);
+            if (!ModelState.IsValid) return View(instr);
+            await _instrRepo.AddAsync(instr);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Instructors/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null) return NotFound();
-
-            var instructor = await _context.Instructors.FindAsync(id);
-            if (instructor == null) return NotFound();
-
-            ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name", instructor.DeptId);
-            return View(instructor);
+            var instr = await _instrRepo.GetByIdAsync(id);
+            if (instr == null) return NotFound();
+            return View(instr);
         }
 
-        // POST: Instructors/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Salary,Address,Image,DeptId")] Instructor instructor)
+        public async Task<IActionResult> Edit(Instructor instr)
         {
-            if (id != instructor.Id) return NotFound();
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(instructor);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Instructors.Any(e => e.Id == instructor.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["DeptId"] = new SelectList(_context.Departments, "Id", "Name", instructor.DeptId);
-            return View(instructor);
+            if (!ModelState.IsValid) return View(instr);
+            await _instrRepo.UpdateAsync(instr);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Instructors/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null) return NotFound();
-
-            var instructor = await _context.Instructors
-                .Include(i => i.Department)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (instructor == null) return NotFound();
-
-            return View(instructor);
-        }
-
-        // POST: Instructors/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var instructor = await _context.Instructors.FindAsync(id);
-            if (instructor != null)
-            {
-                _context.Instructors.Remove(instructor);
-                await _context.SaveChangesAsync();
-            }
+            await _instrRepo.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }
+
 }

@@ -1,8 +1,54 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h2 class="mb-4">Services</h2>
+
+<div class="row">
+
+    <!-- Create Student -->
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/images/man.png" alt="Student">
+            <div class="card-body text-center">
+                <h5 class="card-title">Create Student</h5>
+                <a asp-controller="Student" asp-action="Create" class="btn btn-primary">Create Student</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Course -->
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/images/comic.png" alt="Course">
+            <div class="card-body text-center">
+                <h5 class="card-title">Create Course</h5>
+                <a asp-controller="Course" asp-action="Create" class="btn btn-primary">Create Course</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Department -->
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/images/department.png" alt="Department">
+            <div class="card-body text-center">
+                <h5 class="card-title">Create Department</h5>
+                <a asp-controller="Department" asp-action="Create" class="btn btn-primary">Create DEpartment</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Instructor -->
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            <img class="card-img-top" src="~/images/male.png" alt="Instructor">
+            <div class="card-body text-center">
+                <h5 class="card-title">Create Instructor</h5>
+                <a asp-controller="Instructor" asp-action="Create" class="btn btn-primary">Create Instractor</a>
+            </div>
+        </div>
+    </div>
+
+    
 </div>
