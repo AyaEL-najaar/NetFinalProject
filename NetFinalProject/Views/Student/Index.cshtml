@@ -28,9 +28,8 @@
         <tr>
             <th>Id</th>
             <th>Name</th>
-            <th>Department</th>
-            <th>Grade</th>
-            <th>Address</th>
+           <th>Grade</th>
+           
             <th></th>
         </tr>
     </thead>
@@ -40,9 +39,8 @@
             <tr>
                 <td>@item.StudentId</td>
                 <td>@item.Name</td>
-                <td>@item.Department?.Name</td>
                 <td>@item.Grade</td>
-                <td>@item.Address</td>
+               
                 <td>
                     <a asp-action="Details" asp-route-id="@item.StudentId" class="btn btn-sm btn-info">Details</a>
                     <a asp-action="Edit" asp-route-id="@item.StudentId" class="btn btn-sm btn-warning">Edit</a>

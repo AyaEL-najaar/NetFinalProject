@@ -1,4 +1,5 @@
 ﻿@model NetFinalProject.Models.Course
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Create Course";
@@ -21,13 +22,17 @@
 
     <div class="mb-3">
         <label asp-for="DeptId" class="form-label"></label>
-        <select asp-for="DeptId" class="form-select" asp-items="ViewBag.DepartmentId"></select>
+        <select asp-for="DeptId" class="form-select" asp-items="ViewBag.Departments">
+            <option value="">-- Select Department --</option>
+        </select>
         <span asp-validation-for="DeptId" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="InstructorId" class="form-label"></label>
-        <select asp-for="InstructorId" class="form-select" asp-items="ViewBag.InstructorId"></select>
+        <select asp-for="InstructorId" class="form-select" asp-items="ViewBag.Instructors">
+            <option value="">-- Select Instructor --</option>
+        </select>
         <span asp-validation-for="InstructorId" class="text-danger"></span>
     </div>
 

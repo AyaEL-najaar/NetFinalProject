@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NetFinalProject.Filters;
 using NetFinalProject.Models;
 using NetFinalProject.Repository;
@@ -9,10 +10,11 @@ namespace NetFinalProject.Controllers
     public class DepartmentController : Controller
     {
         private readonly IDepartmentRepository _deptRepo;
-
-        public DepartmentController(IDepartmentRepository deptRepo)
+        private readonly UniversityContext _context;
+        public DepartmentController(IDepartmentRepository deptRepo, UniversityContext context)
         {
             _deptRepo = deptRepo;
+            _context = context;
         }
         public IActionResult Departments()
         {
@@ -63,12 +65,36 @@ namespace NetFinalProject.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
+        // GET: Department/Delete/5
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            await _deptRepo.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            var department = await _context.Departments
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (department == null)
+                return NotFound();
+
+            return View(department);
         }
+
+        // POST: Department/DeleteConfirmed
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var department = await _context.Departments.FindAsync(id);
+            if (department == null)
+                return NotFound();
+
+            _context.Departments.Remove(department);
+            await _context.SaveChangesAsync();
+
+            ViewBag.Deleted = true;
+            ViewBag.Message = "✔️ Department deleted successfully!";
+            return View("Delete");
+        }
+
     }
 
 }

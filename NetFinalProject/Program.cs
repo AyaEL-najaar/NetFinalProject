@@ -44,6 +44,7 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<UniversityContext>();
 
+     // Seed Departments
     if (!context.Departments.Any())
     {
         context.Departments.AddRange(
@@ -53,9 +54,20 @@ using (var scope = app.Services.CreateScope())
             new Department { Name = "Software Engineering", ManagerName = "Dr. Sara" },
             new Department { Name = "Cyber Security", ManagerName = "Dr. Youssef" }
         );
-        context.SaveChanges();
     }
+
+    // Seed Instructors
+    if (!context.Instructors.Any())
+    {
+        context.Instructors.AddRange(
+            new Instructor { Name = "Dr. Ahmed" , DeptId =1},
+            new Instructor { Name = "Dr. Mona", DeptId = 2 }
+        );
+    }
+    context.SaveChanges();
 }
+
+
 
 // ======================
 // 3️⃣ Configure Middleware / Pipeline

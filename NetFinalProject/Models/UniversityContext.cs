@@ -57,6 +57,25 @@ namespace NetFinalProject.Models
                 .Property(i => i.Salary)
                 .HasPrecision(18, 2);
 
+            modelBuilder.Entity<Department>()
+        .HasMany(d => d.Courses)
+        .WithOne(c => c.Department)
+        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Student>()
+    .HasOne(s => s.Department)
+    .WithMany(d => d.Students)
+    .HasForeignKey(s => s.DeptId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Course>()
+        .HasOne(c => c.Instructor)
+        .WithMany(i => i.Courses)
+        .HasForeignKey(c => c.InstructorId)
+        .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Instructor>().HasData(
+        new Instructor { Id = 1, Name = "Dr. Ahmed" },
+        new Instructor { Id = 2, Name = "Dr. Mona" }
+    );
         }
 
     }

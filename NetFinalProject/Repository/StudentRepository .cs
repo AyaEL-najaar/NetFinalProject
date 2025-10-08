@@ -28,8 +28,13 @@ namespace NetFinalProject.Repository
         public async Task<IEnumerable<Student>> GetAllAsync() =>
             await _context.Students.AsNoTracking().ToListAsync();
 
-        public async Task<Student?> GetByIdAsync(int id) =>
-            await _context.Students.FindAsync(id);
+        public async Task<Student?> GetByIdAsync(int id)
+        {
+            return await _context.Students
+                .Include(s => s.Department)
+                .FirstOrDefaultAsync(s => s.StudentId == id);
+        }
+
 
         public async Task<Student?> UpdateAsync(Student entity)
         {

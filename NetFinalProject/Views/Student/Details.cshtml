@@ -13,29 +13,18 @@
         <dt class="col-sm-3">Name</dt>
         <dd class="col-sm-9">@Model.Name</dd>
 
-        <dt class="col-sm-3">Image</dt>
-        <dd class="col-sm-9">@Model.Image</dd>
-
+       
         <dt class="col-sm-3">Address</dt>
         <dd class="col-sm-9">@Model.Address</dd>
 
         <dt class="col-sm-3">Grade</dt>
         <dd class="col-sm-9">@Model.Grade</dd>
-
         <dt class="col-sm-3">Department</dt>
-        <dd class="col-sm-9">@Model.Department?.Name</dd>
+        <dd class="col-sm-9"> @Model.Department?.Name</dd>
     </dl>
-</div>
+    
 
-<div>
-    <h4>Registered Courses</h4>
-    <ul>
-        @foreach (var cs in Model.CourseStudents)
-        {
-            <li>@cs.Course?.Name</li>
-        }
-    </ul>
-</div>
+
 
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.StudentId" class="btn btn-warning">Edit</a>

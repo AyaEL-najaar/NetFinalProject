@@ -29,7 +29,9 @@
 
     <div class="mb-3">
         <label asp-for="DeptId" class="form-label"></label>
-        <select asp-for="DeptId" class="form-select" asp-items="ViewBag.DeptId"></select>
+        <select asp-for="DeptId" class="form-select" asp-items="ViewBag.DeptId">
+            <option value="">-- Select Department --</option>
+        </select>
         <span asp-validation-for="DeptId" class="text-danger"></span>
     </div>
 
